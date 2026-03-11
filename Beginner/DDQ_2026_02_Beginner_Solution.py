@@ -223,7 +223,7 @@ def main():
     print(list_users_to_add_df)
     print("=================================================")
 
-    #check if the users in the csv file already exist on the site
+    #Split the list into existing df and new df users
     users_existing_df = list_users_to_add_df[list_users_to_add_df["username"].isin(current_users_df["user_name"])]
     users_new_df = list_users_to_add_df[~list_users_to_add_df["username"].isin(current_users_df["user_name"])]
 
