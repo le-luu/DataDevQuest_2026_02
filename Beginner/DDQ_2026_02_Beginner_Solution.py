@@ -1,3 +1,13 @@
+"""
+DataDevQuest - DDQ2026_02
+Challenged By: Jordan Woods
+Level: Beginner
+Created By: Le Luu
+
+Objective: Familiarize yourself with VizQL Data Service, and connect and execute a query to a published data source.
+Description: 
+Use the filter by Category to keep only Furniture and Technology.
+"""
 import pandas as pd
 import json
 import tableauserverclient as TSC
@@ -100,13 +110,25 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
     tableau_auth = TSC.PersonalAccessTokenAuth(token_name=PAT_NAME, personal_access_token=PAT_SECRET, site_id=SITE_ID)
     server = TSC.Server(SERVER_ADDRESS, use_server_version=True)
 
+    print("Inside user_updates function")
+    print(list_users_to_add_df)
     with server.auth.sign_in(tableau_auth):
-        user1= TSC.UserItem(name=list_users_to_add_df["username"], site_role=list_users_to_add_df["license_level"])
+
+        user_name_to_update = input("\nEnter the username of the user you want to update: ")
+
+        all_users, _ = server.users.get()
+
+        user_to_update = next((user for user in all_users if user.name == user_name_to_update), None)
+
+        if user_to_update is None:
+            print(f"User {user_name_to_update} not found on the site.")
+            return
         
         while True:
             print("\nWould you like to update:")
             print("1. Site Role")
             print("2. Add User to a Group")
+            print("3. Remove a User from a Group")
             print("4. Exit")
 
             selection = input("Enter the number corresponding to your choice: ")
@@ -117,31 +139,103 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
                     "2": "Creator",
                     "3": "ExploreCanPublish",
                     "4": "Unlicensed",
-                    "5": "ReadOnly",
-                    "6": "Viewer"
+                    "5": "ReadOnly"
                 }
                 print("\nAvailable site roles:")
                 for key, value in site_roles.items():
                     print(f"{key}. {value}")
                 role_selection = input("Enter the number corresponding to the site role you want to assign: ")
                 if role_selection in site_roles:
-                    user1.site_role = site_roles[role_selection]
-                    server.users.update(user1)
-                    print(f"User {user1.name} site role updated to {user1.site_role}")
+                    user_to_update.site_role = site_roles[role_selection]
+                    server.users.update(user_to_update)
+                    print(f"User {user_to_update.name} site role updated to {user_to_update.site_role}")
                 else:
                     print("Invalid selection. Please try again.")
 
-            elif selection == "2":
-                all_groups, pagination_item = server.groups.get()
-                print("\nAvailable groups:")
-                #Store the group names and ids in a list of dictionaries
-                group_list = []
-                for group in all_groups:
-                    print(group.name,group.id)
-                    group_list.append({"name": group.name, "id": group.id})
+            # elif selection == "2":
+            #     all_groups, pagination_item = server.groups.get()
+            #     print("\nAvailable groups:")
+            #     #Store the group names and ids in a list of dictionaries
+            #     group_list = []
+            #     for group in all_groups:
+            #         print(group.name,group.id)
+            #         group_list.append({"name": group.name, "id": group.id})
 
-                group_name = input("Enter the name of the group to add the user to: ")
-                server.groups.add_user(group_name, user1)
+            #     group_name = input("Enter the name of the group to add the user to: ")
+            #     server.groups.add_user(group_name, user_to_update)
+            elif selection == "2":
+                server.users.populate_groups(user_to_update)
+                if not user_to_update.groups:
+                    print(f"User {user_to_update.name} is not currently in any groups.")
+                    all_groups, pagination_item = server.groups.get()
+
+                    print("\nAvailable groups:")
+
+                    group_list = []
+                    for group in all_groups:
+                        group_list.append({"name": group.name, "id": group.id})
+                    groups_df = pd.DataFrame(group_list)
+                    print(groups_df)
+
+                    group_name = input("\nEnter the name of the group to add the user to: ")
+
+                    # find the selected group
+                    group = next((g for g in all_groups if g.name == group_name), None)
+
+                    if group:
+                        server.groups.add_user(group, user_to_update.id)
+                        print(f"User {user_to_update.name} added to group {group.name}")
+                        
+                    else:
+                        print("Group not found.")
+
+                else:
+                    print(f"User {user_to_update.name} is currently in the following groups:")
+                    for group in user_to_update.groups:
+                        print(group.name)
+                    print(f"\nWould you like to add user {user_to_update.name} to another group?")
+                    add_to_group_selection = input("Enter y for yes, n for no:")
+                    if add_to_group_selection.lower() == "y":
+                        all_groups, pagination_item = server.groups.get()
+
+                        print("\nAvailable groups:")
+
+                        group_list = []
+                        for group in all_groups:
+                            group_list.append({"name": group.name, "id": group.id})
+                        groups_df = pd.DataFrame(group_list)
+                        print(groups_df)
+
+                        group_name = input("\nEnter the name of the group to add the user to: ")
+
+                        # find the selected group
+                        group = next((g for g in all_groups if g.name == group_name), None)
+
+                        if group:
+                            server.groups.add_user(group, user_to_update.id)
+                            print(f"User {user_to_update.name} added to group {group.name}")
+                            
+                        else:
+                            print("Group not found.")
+
+            elif selection == "3":
+                server.users.populate_groups(user_to_update)
+                if not user_to_update.groups:
+                    print(f"User {user_to_update.name} is not currently in any groups.")
+                else:
+                    print(f"User {user_to_update.name} is currently in the following groups:")
+                    for group in user_to_update.groups:
+                        print(group.name)
+
+                    group_name = input("\nEnter the name of the group to remove the user from: ")
+
+                    group = next((g for g in user_to_update.groups if g.name == group_name), None)
+
+                    if group:
+                        server.groups.remove_user(group, user_to_update.id)
+                        print(f"User {user_to_update.name} removed from group {group.name}")
+                    else:
+                        print("Group not found.")
 
             elif selection == "4":
                 print("Exiting...")
@@ -150,6 +244,7 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
                 print("Invalid selection. Please try again.")
 
 def main():
+
     load_dotenv()
 
     PAT_NAME = os.getenv("PAT_NAME")
