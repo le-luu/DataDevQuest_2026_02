@@ -4,9 +4,7 @@ Challenged By: Jordan Woods
 Level: Beginner
 Created By: Le Luu
 
-Objective: Familiarize yourself with VizQL Data Service, and connect and execute a query to a published data source.
-Description: 
-Use the filter by Category to keep only Furniture and Technology.
+Objective: Manage and add/remove/update multiple users on Tableau Cloud using TSC v0.40
 """
 import pandas as pd
 import json
@@ -34,18 +32,18 @@ def list_all_users(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID):
                               "groups": [group.name for group in user.groups]})
     return user_list
 
+#Add users from the list to the site with user_name and the site_role
 def user_add(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_add_df):
     tableau_auth = TSC.PersonalAccessTokenAuth(token_name=PAT_NAME, personal_access_token=PAT_SECRET, site_id=SITE_ID)
     server = TSC.Server(SERVER_ADDRESS, use_server_version=True)
 
     with server.auth.sign_in(tableau_auth):
-        # users_to_add = []
         for row in list_users_to_add_df.itertuples():
             user1= TSC.UserItem(name=row.username, site_role=row.license_level)
-            # users_to_add.append(user1)
             print(f"\nUser {user1.name} with site role {user1.site_role} added to the list of users to be added.")
             server.users.add(user1)
 
+#Remove users from the list giving the user_id
 def user_remove(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, users_to_remove_df):
     tableau_auth = TSC.PersonalAccessTokenAuth(token_name=PAT_NAME, personal_access_token=PAT_SECRET, site_id=SITE_ID)
     server = TSC.Server(SERVER_ADDRESS, use_server_version=True)
@@ -68,16 +66,16 @@ def user_remove(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, users_to_remove_d
 #                               "group_name": group.name})
 #     return group_list
 
+#Update user info such as site_role, add/remove group
 def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_add_df):
     tableau_auth = TSC.PersonalAccessTokenAuth(token_name=PAT_NAME, personal_access_token=PAT_SECRET, site_id=SITE_ID)
     server = TSC.Server(SERVER_ADDRESS, use_server_version=True)
 
     with server.auth.sign_in(tableau_auth):
-
+        #Let the user enter the username to update
         user_name_to_update = input("\nEnter the username of the user you want to update: ")
 
         all_users, _ = server.users.get()
-
         user_to_update = next((user for user in all_users if user.name == user_name_to_update), None)
 
         if user_to_update is None:
@@ -93,6 +91,7 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
 
             selection = input("Enter the number corresponding to your choice: ")
 
+            #Update the site role for the specified user
             if selection == "1":
                 site_roles = {
                     "1": "Viewer",
@@ -113,8 +112,10 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
                 else:
                     print("Invalid selection. Please try again.")
 
+            #Add the specified user to a group, check if user already added in a group and want to add more
             elif selection == "2":
                 server.users.populate_groups(user_to_update)
+                #if user has not been added to any groups
                 if not user_to_update.groups:
                     print(f"\n==> User {user_to_update.name} is not currently in any groups.")
                     all_groups, pagination_item = server.groups.get()
@@ -138,7 +139,7 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
                         
                     else:
                         print("Group not found.")
-
+                #If user was already added in a group and want to add more groups
                 else:
                     print(f"\n==> User {user_to_update.name} is currently in the following groups:")
                     for group in user_to_update.groups:
@@ -168,6 +169,7 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
                         else:
                             print("Group not found.")
 
+            #Remove the user from a group, check if the user was already in a group
             elif selection == "3":
                 server.users.populate_groups(user_to_update)
                 if not user_to_update.groups:
