@@ -79,7 +79,7 @@ def user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_ad
         user_to_update = next((user for user in all_users if user.name == user_name_to_update), None)
 
         if user_to_update is None:
-            print(f"User {user_name_to_update} not found on the site.")
+            print(f"==> User {user_name_to_update} not found on the site.")
             return
         
         while True:
@@ -224,11 +224,13 @@ def main():
     print("=================================================")
 
     #check if the users in the csv file already exist on the site
-    users_to_add_df = list_users_to_add_df[list_users_to_add_df["username"].isin(current_users_df["user_name"])]
+    users_existing_df = list_users_to_add_df[list_users_to_add_df["username"].isin(current_users_df["user_name"])]
+    users_new_df = list_users_to_add_df[~list_users_to_add_df["username"].isin(current_users_df["user_name"])]
+
     #if a user already existed on the site, update the info or remove the user
-    if len(users_to_add_df) > 0: 
+    if not users_existing_df.empty: 
         print("\n=================================================")
-        print("These users already exist on the site:", users_to_add_df)
+        print("These users already exist on the site:", users_existing_df)
         print("\nWould you like to update the user info or remove them from the site?")
         print("1. Update user info")
         print("2. Remove user from the site")
@@ -238,7 +240,7 @@ def main():
             print("=================================================")
             print("==========    UPDATE USER PROFILE      ==========")
             print("=================================================")
-            user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, users_to_add_df)
+            user_updates(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, users_existing_df)
 
             print("\n=================================================")
             print("List of users on the site after updating user info:")
@@ -270,8 +272,8 @@ def main():
             print(current_users_df)
 
     #else add the new user to the site
-    else:
-        user_add(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, list_users_to_add_df)
+    if not users_new_df.empty:
+        user_add(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID, users_new_df)
         new_list = list_all_users(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_ID)
         new_list_df = pd.DataFrame(new_list)
         print("\n=================================================")
