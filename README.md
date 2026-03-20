@@ -165,3 +165,53 @@ def list_jobs_TSC(PAT_NAME, PAT_SECRET, SERVER_ADDRESS, SITE_NAME, job_type_sele
 For TSC option, I use the filter function to apply the filter to some fields and add order_by to order a column and set a slice to limit number of result. However, I couldn't get the title, details of the job. Some of columns (title, subtitle, notes) return None.
 
 In the final step, I calculate the average and standard deviation of the running time in seconds and decide how many seconds to wait if it's low/ moderate/ high variablity.
+
+### Output
+
+<img src="https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/intermediate_output.png" height="500">
+
+The output after running the Intermediate challenge.
+
+## Instructions
+- You need to install Python 3.12 in your local computer 
+- Fork the repository and clone it to your local computer
+- Open the Command Prompt (for Windows) and Terminal (for Mac), change the directory to the DataDevQuest_2025_05
+    ```
+    cd DataDevQuest_2026_02
+    ```
+- Install and activate the virtual environment
+    ```
+    pip install virtualenv
+    virtualenv venv
+    venv\Scripts\activate
+    ```    
+- Install the packages in the Command Prompt
+    ```
+    pip install -r requirements.txt
+    ```
+- Create a .env file to store all credential data and save it inside the DataDevQuest_2026_02 folder
+  ```
+  PAT_NAME = <PUT_YOUR_PERSONAL_ACCESS_TOKEN_NAME>
+  PAT_SECRET = "YOUR_PAT_SECRET"
+  SERVER_ADDRESS = <YOUR_SERVER_ADDRESS> FOR EXAMPLE:"https://10ax.online.tableau.com/"
+  SITE_NAME = <YOUR_SITE_NAME>
+  API_VERSION = <YOUR_API_VERSION>
+  CSV_PATH = <YOUR_CSV_FILE_DIRECTORY>
+  ```
+
+- For Beginner challenge, change directory to Beginner folder
+  ```
+  cd Beginner
+  ```
+- Run this script for the Beginner Challenge:
+    ```
+    python Le_DDQ_2026_02_Beginner_Solution.py
+    ```
+- For Intermediate challenge, change directory to Intermediate folder
+  ```
+  cd Intermediate
+  ```
+- Run this script for the Intermediate Challenge:
+    ```
+    python Le_DDQ_2026_02_Intermediate_Solution.py
+    ```
