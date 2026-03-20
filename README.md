@@ -36,20 +36,21 @@ To solve the problem above, I built some functions:
 - user_remove: to remove a list of users on the site
 - user_update: to update the user's info on the site, it could be: site role, add user to a group or remove users from a group
 
-![image](https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_main.png)
-
+<img src="https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_main.png" height="500">
 Then build a program to let the user choose the option to add users from a CSV file or update users if found existing users on the list.
 
 ### Output
 
-![image](https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_add_users.png)
+<img src=https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_add_users.png width='600'>
 
-Add new users from a CSV file to the site
+Add new users from a CSV file to the site. The program will check if users in the CSV are new or already existed in the user list from Tableau Cloud site. It will seperate into 2 groups. For the new users group, it will add those users to the site.
 
-![image](https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_update_users.png)
+<img src="https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_update_users.png" height="600">
 
-Update user's info (site role, assign to a new group or remove user from a group)
+For the list of existing users, it will ask users if they want to update or remove those users. If choosing "update", it will let the user to choose updating the site role, assign user to another group or remove user from a group.
 
-![image](https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_remove.png)
+<img src="https://github.com/le-luu/DataDevQuest_2026_02/blob/main/img/beginner_remove.png" height="500">
 
-Remove user from the site
+Remove user from the site. For existing users list, the user can choose to remove from the site.
+
+
