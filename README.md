@@ -7,6 +7,7 @@
 Jordan Woods
 
 ### Solution Video
+[![DDQ_2026_02](https://img.youtube.com/vi/n8_kODsYo20/0.jpg)](https://www.youtube.com/watch?v=n8_kODsYo20)
 
 ## Beginner Challenge
 
@@ -53,4 +54,23 @@ For the list of existing users, it will ask users if they want to update or remo
 
 Remove user from the site. For existing users list, the user can choose to remove from the site.
 
+## Intermediate Challenge
 
+Link to the Intermediate Challenge: https://datadevquest.com/challenges/ddq2026-02-fetch-recent-refreshes-intermediate
+
+### Objective
+
+- Filter, sort and slice background jobs
+- Track the history jobs
+- Apply REST API, TSC in Python to track the jobs
+- Dynamically using parameter to fetch refreshes
+
+### Tasks
+
+I applied 3 ways to solve the challenge:
+
+**1/ Using REST API to query jobs and get the job info from another endpoint**
+
+**2/ Using REST API to query the job and job info in one endpoint**
+
+**3/ Using TSC in Python to query the job**
